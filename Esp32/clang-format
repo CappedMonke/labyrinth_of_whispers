@@ -1,0 +1,10 @@
+---
+IndentWidth: 4
+AccessModifierOffset: -4
+ColumnLimit: 120
+IndentPPDirectives: BeforeHash
+SortIncludes: CaseInsensitive
+PointerAlignment: Right
+AllowShortFunctionsOnASingleLine: None
+MaxEmptyLinesToKeep: 1
+BreakConstructorInitializers: BeforeColon
