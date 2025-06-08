@@ -2,12 +2,14 @@ using UnityEngine.Android;
 using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
+using UnityEngine.AI;
 
 public class BluetoothManager : MonoBehaviour
 {
     public UnityEvent<string> OnDataReceived = new();
 
     private bool isConnected = false;
+    private string lastConnectedMac;
 
     private static AndroidJavaClass bluetoothPlugin;
     private static AndroidJavaObject BluetoothConnector;
@@ -70,7 +72,6 @@ public class BluetoothManager : MonoBehaviour
     // DO NOT CHANGE ITS NAME OR IT WILL NOT BE FOUND BY THE JAVA CLASS
     public void ScanStatus(string status)
     {
-        Toast("Scan Status: " + status);
     }
 
     // This function will be called by Java class whenever a new device is found,
@@ -104,6 +105,7 @@ public class BluetoothManager : MonoBehaviour
         if (Application.platform != RuntimePlatform.Android)
             return;
 
+        lastConnectedMac = mac;
         BluetoothConnector.CallStatic("StartConnection", mac);
     }
 
@@ -121,8 +123,18 @@ public class BluetoothManager : MonoBehaviour
     // DO NOT CHANGE ITS NAME OR IT WILL NOT BE FOUND BY THE JAVA CLASS
     public void ConnectionStatus(string status)
     {
-        Toast("Connection Status: " + status);
         isConnected = status == "connected";
+
+        if (isConnected)
+        {
+            Toast("Connected");
+        }
+
+        if (status == "disconnected")
+        {
+            Toast("Disconnected, trying to reconnect...");
+            StartCoroutine(RetryConnection(lastConnectedMac));
+        }
     }
 
     // This function will be called by Java class whenever BT data is received,
@@ -182,31 +194,35 @@ public class BluetoothManager : MonoBehaviour
         return null;
     }
 
-    public void ConnectPairedDevice(string macAddress)
+    public void ConnectPairedDevice(string deviceName)
     {
         if (Application.platform != RuntimePlatform.Android)
             return;
 
-        string mac = GetMacAddressFromPairedDevices(macAddress);
+        Toast("Trying to connect to " + deviceName);
+
+        string mac = GetMacAddressFromPairedDevices(deviceName);
         if (mac != null)
         {
             StartConnection(mac);
         }
     }
 
-    public void ConnectPairedDeviceWithRetry(string macAddress, int maxRetries = -1, float retryDelay = 2.0f)
+    public void ConnectPairedDeviceWithRetry(string deviceName, int maxRetries = -1, float retryDelay = 5.0f)
     {
         if (Application.platform != RuntimePlatform.Android)
             return;
 
-        string mac = GetMacAddressFromPairedDevices(macAddress);
+        Toast("Trying to connect to " + deviceName);
+
+        string mac = GetMacAddressFromPairedDevices(deviceName);
         if (mac != null)
         {
             StartCoroutine(RetryConnection(mac, maxRetries, retryDelay));
         }
     }
 
-    private IEnumerator RetryConnection(string mac, int maxRetries, float retryDelay)
+    private IEnumerator RetryConnection(string mac, int maxRetries = -1, float retryDelay = 5.0f)
     {
         int attempt = 0;
         while (maxRetries == -1 || attempt < maxRetries)

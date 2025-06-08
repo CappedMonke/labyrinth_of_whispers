@@ -11,7 +11,7 @@ public class Cane : MonoBehaviour
         if (bluetoothManager != null)
         {
             bluetoothManager.OnDataReceived.AddListener(HandleBluetoothData);
-            bluetoothManager.ConnectPairedDeviceWithRetry(CANE_DEVICE_NAME, -1, 5);
+            bluetoothManager.ConnectPairedDeviceWithRetry(CANE_DEVICE_NAME);
         }
     }
 
