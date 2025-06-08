@@ -141,7 +141,7 @@ public class BluetoothManager : MonoBehaviour
     // DO NOT CHANGE ITS NAME OR IT WILL NOT BE FOUND BY THE JAVA CLASS
     public void ReadData(string data)
     {
-        Debug.Log("BT Stream: " + data);
+        // Debug.Log("BT Stream: " + data);
         OnDataReceived?.Invoke(data);
     }
 

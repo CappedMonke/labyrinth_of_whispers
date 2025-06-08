@@ -1,9 +1,15 @@
 using UnityEngine;
 
-public class Cane : MonoBehaviour
+public class BlindCane : MonoBehaviour
 {
     private const string CANE_DEVICE_NAME = "BlindCane";
+    private Rigidbody rb;
     private BluetoothManager bluetoothManager;
+
+    private void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+    }
 
     private void Start()
     {
@@ -27,5 +33,15 @@ public class Cane : MonoBehaviour
 
             transform.rotation = Quaternion.Euler(0, x, 0);
         }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        bluetoothManager.WriteData("1");
+    }
+    
+    void OnTriggerExit(Collider other)
+    {
+        bluetoothManager.WriteData("0");
     }
 }
