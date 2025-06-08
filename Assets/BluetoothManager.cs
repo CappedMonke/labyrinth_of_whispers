@@ -9,7 +9,7 @@ public class BluetoothManager : MonoBehaviour
 
     private bool isConnected = false;
 
-    private static AndroidJavaClass unity3dbluetoothplugin;
+    private static AndroidJavaClass bluetoothPlugin;
     private static AndroidJavaObject BluetoothConnector;
 
     void Awake()
@@ -44,8 +44,8 @@ public class BluetoothManager : MonoBehaviour
                     });
         }
 
-        unity3dbluetoothplugin = new AndroidJavaClass("com.example.unity3dbluetoothplugin.BluetoothConnector");
-        BluetoothConnector = unity3dbluetoothplugin.CallStatic<AndroidJavaObject>("getInstance");
+        bluetoothPlugin = new AndroidJavaClass("com.example.bluetoothplugin.BluetoothConnector");
+        BluetoothConnector = bluetoothPlugin.CallStatic<AndroidJavaObject>("getInstance");
     }
 
     // Start device scan
