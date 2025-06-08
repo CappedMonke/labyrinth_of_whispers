@@ -4,19 +4,14 @@
     package="com.unity3d.player"
     xmlns:tools="http://schemas.android.com/tools"
     android:installLocation="preferExternal">
-  <!-- Request legacy Bluetooth permisions for older devices -->
     <uses-permission android:name="android.permission.BLUETOOTH" />
-  
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
-  
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
-  
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED" />
-
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <!--<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />-->
+    <uses-permission android:name="android.permission.VIBRATE" />
     <supports-screens
         android:smallScreens="true"
         android:normalScreens="true"

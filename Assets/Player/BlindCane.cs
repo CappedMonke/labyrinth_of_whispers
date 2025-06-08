@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class BlindCane : MonoBehaviour
 {
+    [SerializeField] [Range(10, 255)] private int vibrationStrenght = 40;
     private const string CANE_DEVICE_NAME = "BlindCane";
     private Rigidbody rb;
     private BluetoothManager bluetoothManager;
@@ -37,7 +38,7 @@ public class BlindCane : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        bluetoothManager.WriteData("1");
+        bluetoothManager.WriteData(vibrationStrenght.ToString());
     }
     
     void OnTriggerExit(Collider other)
