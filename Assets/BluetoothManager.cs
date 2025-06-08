@@ -2,7 +2,6 @@ using UnityEngine.Android;
 using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
-using UnityEngine.AI;
 
 public class BluetoothManager : MonoBehaviour
 {
