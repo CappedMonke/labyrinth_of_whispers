@@ -156,6 +156,15 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""AdjustSpeed"",
+                    ""type"": ""Button"",
+                    ""id"": ""5469d123-689a-46eb-a30b-d87aa260be1e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -224,6 +233,50 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""Rotate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f612ffab-9c59-42fd-8bfe-29413fdd3587"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": ""Scale"",
+                    ""groups"": """",
+                    ""action"": ""AdjustSpeed"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3d743eca-3a3d-46bb-97a6-bf5cb3486a96"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": ""Scale(factor=2)"",
+                    ""groups"": """",
+                    ""action"": ""AdjustSpeed"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""935cdbca-5589-4a8d-9025-147c2aab61b2"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": ""Scale(factor=3)"",
+                    ""groups"": """",
+                    ""action"": ""AdjustSpeed"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5fb7e87f-46f8-4808-a789-e11f36fa3a98"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": ""Scale(factor=4)"",
+                    ""groups"": """",
+                    ""action"": ""AdjustSpeed"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -288,6 +341,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_PlayerPC = asset.FindActionMap("PlayerPC", throwIfNotFound: true);
         m_PlayerPC_Move = m_PlayerPC.FindAction("Move", throwIfNotFound: true);
         m_PlayerPC_Rotate = m_PlayerPC.FindAction("Rotate", throwIfNotFound: true);
+        m_PlayerPC_AdjustSpeed = m_PlayerPC.FindAction("AdjustSpeed", throwIfNotFound: true);
         // BlindCanePC
         m_BlindCanePC = asset.FindActionMap("BlindCanePC", throwIfNotFound: true);
         m_BlindCanePC_Rotate = m_BlindCanePC.FindAction("Rotate", throwIfNotFound: true);
@@ -482,6 +536,7 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private List<IPlayerPCActions> m_PlayerPCActionsCallbackInterfaces = new List<IPlayerPCActions>();
     private readonly InputAction m_PlayerPC_Move;
     private readonly InputAction m_PlayerPC_Rotate;
+    private readonly InputAction m_PlayerPC_AdjustSpeed;
     /// <summary>
     /// Provides access to input actions defined in input action map "PlayerPC".
     /// </summary>
@@ -501,6 +556,10 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "PlayerPC/Rotate".
         /// </summary>
         public InputAction @Rotate => m_Wrapper.m_PlayerPC_Rotate;
+        /// <summary>
+        /// Provides access to the underlying input action "PlayerPC/AdjustSpeed".
+        /// </summary>
+        public InputAction @AdjustSpeed => m_Wrapper.m_PlayerPC_AdjustSpeed;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -533,6 +592,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Rotate.started += instance.OnRotate;
             @Rotate.performed += instance.OnRotate;
             @Rotate.canceled += instance.OnRotate;
+            @AdjustSpeed.started += instance.OnAdjustSpeed;
+            @AdjustSpeed.performed += instance.OnAdjustSpeed;
+            @AdjustSpeed.canceled += instance.OnAdjustSpeed;
         }
 
         /// <summary>
@@ -550,6 +612,9 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @Rotate.started -= instance.OnRotate;
             @Rotate.performed -= instance.OnRotate;
             @Rotate.canceled -= instance.OnRotate;
+            @AdjustSpeed.started -= instance.OnAdjustSpeed;
+            @AdjustSpeed.performed -= instance.OnAdjustSpeed;
+            @AdjustSpeed.canceled -= instance.OnAdjustSpeed;
         }
 
         /// <summary>
@@ -722,6 +787,13 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnRotate(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "AdjustSpeed" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnAdjustSpeed(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "BlindCanePC" which allows adding and removing callbacks.

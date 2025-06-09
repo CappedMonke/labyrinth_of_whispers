@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerPC : MonoBehaviour
 {
     [SerializeField] float speed = 5f;
+    float speedMultiplier = 1f;
     [SerializeField] float rotationSpeed = 100f;
 
     Rigidbody rb;
@@ -13,6 +14,22 @@ public class PlayerPC : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         controls = new Controls();
         controls.PlayerPC.Enable();
+    }
+
+    void Update()
+    {
+        float newSpeedMultiplier = controls.PlayerPC.AdjustSpeed.ReadValue<float>();
+        if (newSpeedMultiplier != 0f)
+        {
+            speedMultiplier = newSpeedMultiplier switch
+            {
+                1f => 0.25f,
+                2f => 0.5f,
+                3f => 0.75f,
+                4f => 1f,
+                _ => 1f,
+            };
+        }
     }
 
     void FixedUpdate()
@@ -28,7 +45,7 @@ public class PlayerPC : MonoBehaviour
     {
         if (input != 0f)
         {
-            rb.MovePosition(rb.position + input * speed * Time.fixedDeltaTime * transform.forward);
+            rb.MovePosition(rb.position + input * speed * speedMultiplier * Time.fixedDeltaTime * transform.forward);
         }
     }
 

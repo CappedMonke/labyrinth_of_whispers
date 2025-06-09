@@ -17,6 +17,9 @@ unsigned long lastIMUTime = 0;
 const unsigned long imuInterval = 50;
 String input = "";
 bool hasVibratedForCalibration = false;
+bool hasSentCalibrateMessage = false;
+unsigned long startTime = 0;
+bool hasWaited = false;
 
 bool lastCalibrateState = HIGH;
 bool lastResetState = HIGH;
@@ -46,6 +49,16 @@ void setup() {
 }
 
 void loop() {
+  if (!hasWaited) {
+    if (startTime == 0) {
+      startTime = millis();
+    }
+    if (millis() - startTime < 1000) {
+      return; // Exit loop until 1 second has passed
+    }
+    hasWaited = true;
+  }
+
   // Read current states
   bool currCalibrate = digitalRead(PIN_BUTTON_CALIBRATE);
   bool currReset = digitalRead(PIN_BUTTON_RESET);
@@ -88,20 +101,27 @@ void loop() {
     hasVibratedForCalibration = true;
   }
 
-  unsigned long now = millis();
+  // Send IMU data repeatedly after calibration feedback
+  if (gyro == 3 && hasVibratedForCalibration) {
+    unsigned long now = millis();
+    if (now - lastIMUTime > imuInterval) {
+      sensors_event_t event;
+      bno.getEvent(&event);
 
-  if (gyro == 3 && now - lastIMUTime > imuInterval) {
-    sensors_event_t event;
-    bno.getEvent(&event);
+      float x = event.orientation.x;
+      float y = event.orientation.y;
+      float z = event.orientation.z;
 
-    float x = event.orientation.x;
-    float y = event.orientation.y;
-    float z = event.orientation.z;
+      String imuData = String(x) + "," + String(y) + "," + String(z);
+      SerialBT.println(imuData);
 
-    String imuData = String(x) + "," + String(y) + "," + String(z);
-    SerialBT.println(imuData);
+      lastIMUTime = now;
 
-    lastIMUTime = now;
+      if (!hasSentCalibrateMessage) {
+        SerialBT.println("calibrate");
+        hasSentCalibrateMessage = true;
+      }
+    }
   }
 
   // Handle vibration intensity messages
