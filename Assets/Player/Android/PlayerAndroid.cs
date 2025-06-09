@@ -4,9 +4,11 @@ using UnityEngine.SceneManagement;
 
 public class PlayerAndroid : MonoBehaviour
 {
-    [SerializeField] float speed = 5f;
-    [SerializeField] float backwardMultiplier = 0.5f;
-    [SerializeField] float moveThreshold = 0.1f;
+    const float speed = 5f;
+    const float backwardMultiplier = 0.5f;
+    const float moveThreshold = 0.1f;
+    bool isColliding = false;
+    bool isVibrating = false;
 
     Rigidbody rb;
     Controls controls;
@@ -40,6 +42,21 @@ public class PlayerAndroid : MonoBehaviour
         else
         {
             Debug.LogError("BluetoothManager not found in the scene.");
+        }
+    }
+
+    void Update()
+    {
+        if (isColliding && !isVibrating)
+        {
+            long[] vibrationPattern = { 0, 100 };
+            VibrationManager.Vibrate(vibrationPattern, repeat: 0);
+            isVibrating = true;
+        }
+        else if (!isColliding && isVibrating)
+        {
+            VibrationManager.Cancel();
+            isVibrating = false;
         }
     }
 
@@ -81,5 +98,15 @@ public class PlayerAndroid : MonoBehaviour
         {
             transform.rotation = Quaternion.Euler(0, -input.eulerAngles.z, 0);
         }
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        isColliding = true;
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        isColliding = false;
     }
 }

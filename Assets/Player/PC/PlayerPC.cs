@@ -2,9 +2,10 @@ using UnityEngine;
 
 public class PlayerPC : MonoBehaviour
 {
-    [SerializeField] float speed = 5f;
+    const float speed = 5f;
     float speedMultiplier = 1f;
-    [SerializeField] float rotationSpeed = 100f;
+    const float backwardMultiplier = 0.5f;
+    const float rotationSpeed = 100f;
 
     Rigidbody rb;
     Controls controls;
@@ -45,6 +46,10 @@ public class PlayerPC : MonoBehaviour
     {
         if (input != 0f)
         {
+            if (input < 0f)
+            {
+                input *= backwardMultiplier;
+            }
             rb.MovePosition(rb.position + input * speed * speedMultiplier * Time.fixedDeltaTime * transform.forward);
         }
     }
@@ -55,5 +60,15 @@ public class PlayerPC : MonoBehaviour
         {
             rb.MoveRotation(rb.rotation * Quaternion.Euler(0, rotationSpeed * input * Time.fixedDeltaTime, 0));
         }
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("Collided with: " + collision.gameObject.name);
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        Debug.Log("Stopped colliding with: " + collision.gameObject.name);
     }
 }
