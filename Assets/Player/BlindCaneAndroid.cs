@@ -47,7 +47,7 @@ public class BlindCaneAndroid : MonoBehaviour
             }
 
             float adjustedRotation = currentRotation - initialRotation;
-            transform.rotation = Quaternion.Euler(0, adjustedRotation, 0);
+            transform.localRotation = Quaternion.Euler(0, adjustedRotation, 0);
         }
     }
 

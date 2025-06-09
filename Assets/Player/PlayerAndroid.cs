@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerAndroid : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class PlayerAndroid : MonoBehaviour
 
     Rigidbody rb;
     Controls controls;
+    BluetoothManager bluetoothManager;
 
     void Awake()
     {
@@ -24,6 +26,28 @@ public class PlayerAndroid : MonoBehaviour
         if (AttitudeSensor.current != null)
         {
             InputSystem.EnableDevice(AttitudeSensor.current);
+        }
+    }
+
+    void Start()
+    {
+        bluetoothManager = FindFirstObjectByType<BluetoothManager>();
+        if (bluetoothManager != null)
+        {
+            bluetoothManager.OnDataReceived.AddListener(HandleBluetoothData);
+            bluetoothManager.ConnectPairedDeviceWithRetry("BlindCane");
+        }
+        else
+        {
+            Debug.LogError("BluetoothManager not found in the scene.");
+        }
+    }
+
+    private void HandleBluetoothData(string data)
+    {
+        if (data == "reset")
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
 

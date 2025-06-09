@@ -16,6 +16,7 @@ BluetoothSerial SerialBT;
 unsigned long lastIMUTime = 0;
 const unsigned long imuInterval = 50;
 String input = "";
+bool hasVibratedForCalibration = false;
 
 bool lastCalibrateState = HIGH;
 bool lastResetState = HIGH;
@@ -73,16 +74,23 @@ void loop() {
   lastResetState = currReset;
   lastAcceptState = currAccept;
 
-  // Skip IMU if magnetometer not calibrated
   uint8_t sys, gyro, accel, mag;
   bno.getCalibration(&sys, &gyro, &accel, &mag);
-  if (mag < 3) {
-    return;
+
+  if (gyro == 3 && !hasVibratedForCalibration) {
+    for (int i = 0; i < 3; i++) {
+      ledcWrite(0, 50);
+      delay(100);
+      ledcWrite(0, 0);
+      delay(100);
+    }
+
+    hasVibratedForCalibration = true;
   }
 
-  // Send IMU data
   unsigned long now = millis();
-  if (now - lastIMUTime > imuInterval) {
+
+  if (gyro == 3 && now - lastIMUTime > imuInterval) {
     sensors_event_t event;
     bno.getEvent(&event);
 
