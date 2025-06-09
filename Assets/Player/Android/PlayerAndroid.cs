@@ -13,6 +13,7 @@ public class PlayerAndroid : MonoBehaviour
     Rigidbody rb;
     Controls controls;
     BluetoothManager bluetoothManager;
+    Player player;
 
     void Awake()
     {
@@ -42,6 +43,12 @@ public class PlayerAndroid : MonoBehaviour
         else
         {
             Debug.LogError("BluetoothManager not found in the scene.");
+        }
+
+        player = GetComponent<Player>();
+        if (player == null)
+        {
+            Debug.LogError("Player component not found on PlayerPC.");
         }
     }
 
@@ -84,10 +91,12 @@ public class PlayerAndroid : MonoBehaviour
             if (input.y > moveThreshold)
             {
                 rb.MovePosition(rb.position + input.y * speed * Time.fixedDeltaTime * transform.forward);
+                player.PlayWalkSound(input.y * speed, moveThreshold, speed);
             }
             else if (input.y < -moveThreshold)
             {
                 rb.MovePosition(rb.position + input.y * backwardMultiplier * speed * Time.fixedDeltaTime * transform.forward);
+                player.PlayWalkSound(input.y * backwardMultiplier * speed, moveThreshold, speed);
             }
         }
     }

@@ -9,12 +9,22 @@ public class PlayerPC : MonoBehaviour
 
     Rigidbody rb;
     Controls controls;
+    Player player;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         controls = new Controls();
         controls.PlayerPC.Enable();
+    }
+
+    void Start()
+    {
+        player = GetComponent<Player>();
+        if (player == null)
+        {
+            Debug.LogError("Player component not found on PlayerPC.");
+        }
     }
 
     void Update()
@@ -51,6 +61,7 @@ public class PlayerPC : MonoBehaviour
                 input *= backwardMultiplier;
             }
             rb.MovePosition(rb.position + input * speed * speedMultiplier * Time.fixedDeltaTime * transform.forward);
+            player.PlayWalkSound(input * speed * speedMultiplier, 0f, speed);
         }
     }
 
