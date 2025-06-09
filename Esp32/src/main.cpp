@@ -6,13 +6,20 @@
 #define PIN_IMU_SDA 32
 #define PIN_IMU_SCL 33
 #define PIN_VIBRATION_MOTOR 13
+#define PIN_BUTTON_CALIBRATE 23
+#define PIN_BUTTON_RESET 22
+#define PIN_BUTTON_ACCEPT 21
 
 Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28, &Wire);
 BluetoothSerial SerialBT;
 
 unsigned long lastIMUTime = 0;
-const unsigned long imuInterval = 30;
+const unsigned long imuInterval = 50;
 String input = "";
+
+bool lastCalibrateState = HIGH;
+bool lastResetState = HIGH;
+bool lastAcceptState = HIGH;
 
 void setup() {
   Serial.begin(115200);
@@ -31,11 +38,50 @@ void setup() {
   ledcSetup(0, 1000, 8);
   ledcAttachPin(PIN_VIBRATION_MOTOR, 0);
   ledcWrite(0, 0);
+
+  pinMode(PIN_BUTTON_CALIBRATE, INPUT_PULLUP);
+  pinMode(PIN_BUTTON_RESET, INPUT_PULLUP);
+  pinMode(PIN_BUTTON_ACCEPT, INPUT_PULLUP);
 }
 
 void loop() {
-  unsigned long now = millis();
+  // Read current states
+  bool currCalibrate = digitalRead(PIN_BUTTON_CALIBRATE);
+  bool currReset = digitalRead(PIN_BUTTON_RESET);
+  bool currAccept = digitalRead(PIN_BUTTON_ACCEPT);
 
+  // Calibrate button
+  if (lastCalibrateState == HIGH && currCalibrate == LOW) {
+    Serial.println("Calibrate button pressed");
+    SerialBT.println("calibrate");
+  }
+
+  // Reset button
+  if (lastResetState == HIGH && currReset == LOW) {
+    Serial.println("Reset button pressed");
+    SerialBT.println("reset");
+  }
+
+  // Accept button
+  if (lastAcceptState == HIGH && currAccept == LOW) {
+    Serial.println("Accept button pressed");
+    SerialBT.println("accept");
+  }
+
+  // Update states
+  lastCalibrateState = currCalibrate;
+  lastResetState = currReset;
+  lastAcceptState = currAccept;
+
+  // Skip IMU if magnetometer not calibrated
+  uint8_t sys, gyro, accel, mag;
+  bno.getCalibration(&sys, &gyro, &accel, &mag);
+  if (mag < 3) {
+    return;
+  }
+
+  // Send IMU data
+  unsigned long now = millis();
   if (now - lastIMUTime > imuInterval) {
     sensors_event_t event;
     bno.getEvent(&event);
@@ -50,6 +96,7 @@ void loop() {
     lastIMUTime = now;
   }
 
+  // Handle vibration intensity messages
   while (SerialBT.available()) {
     char c = SerialBT.read();
 
