@@ -2,23 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(AudioSource))]
 public class Player : MonoBehaviour
 {
     [Header("Audio Settings")]
-    private AudioSource walkAudioSource;
+    [SerializeField] private AudioSource walkAudioSource;
     [SerializeField] private List<AudioClip> normalWalkSounds;
     [SerializeField] private List<AudioClip> silentWalkSounds;
     [SerializeField] private float silentWalkThreshold = 0.3f;
     [SerializeField] private Vector2Int stepPause = new(200, 800);
     private bool canPlayStepSound = true;
+    [SerializeField] private AudioSource collisionAudioSource;
+    [SerializeField] private List<AudioClip> playerCollisionSounds;
 
-    void Awake()
+    private Rigidbody rb;
+
+    void Start()
     {
-        walkAudioSource = GetComponent<AudioSource>();
-        if (walkAudioSource == null)
+        rb = GetComponent<Rigidbody>();
+        if (rb == null)
         {
-            Debug.LogError("AudioSource component not found on Player.");
+            Debug.LogError("Rigidbody component not found on Player.");
         }
     }
 
@@ -56,5 +59,12 @@ public class Player : MonoBehaviour
         canPlayStepSound = false;
         yield return new WaitForSeconds(scaledPause);
         canPlayStepSound = true;
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {   
+        int randomIndex = Random.Range(0, playerCollisionSounds.Count);
+        AudioClip collisionSound = playerCollisionSounds[randomIndex];
+        collisionAudioSource.PlayOneShot(collisionSound);
     }
 }

@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class PlayerPC : MonoBehaviour
 {
-    const float speed = 5f;
+    const float speed = 4f;
     float speedMultiplier = 1f;
     const float backwardMultiplier = 0.5f;
     const float rotationSpeed = 100f;

@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class PlayerAndroid : MonoBehaviour
 {
-    const float speed = 5f;
+    const float speed = 4f;
     const float backwardMultiplier = 0.5f;
     const float moveThreshold = 0.1f;
     bool isColliding = false;
