@@ -15,6 +15,7 @@ public class BlindCaneAndroid : MonoBehaviour
         bluetoothManager = FindFirstObjectByType<BluetoothManager>();
         if (bluetoothManager != null)
         {
+            Time.timeScale = 0f; // Pause the game until Bluetooth is connected
             bluetoothManager.OnDataReceived.AddListener(HandleBluetoothData);
             bluetoothManager.ConnectPairedDeviceWithRetry(CANE_DEVICE_NAME);
         }
@@ -42,12 +43,13 @@ public class BlindCaneAndroid : MonoBehaviour
             float currentRotation = x;
             if (!isCalibrated)
             {
-                initialRotation = currentRotation;
+                initialRotation = currentRotation - transform.parent.rotation.eulerAngles.y;
                 isCalibrated = true;
+                Time.timeScale = 1f; // Resume the game after calibration
             }
 
             float adjustedRotation = currentRotation - initialRotation;
-            transform.localRotation = Quaternion.Euler(0, adjustedRotation, 0);
+            transform.rotation = Quaternion.Euler(0, adjustedRotation, 0);
         }
     }
 
