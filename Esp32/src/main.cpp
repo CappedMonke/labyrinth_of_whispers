@@ -3,12 +3,13 @@
 #include <BluetoothSerial.h>
 #include <Wire.h>
 
-#define PIN_IMU_SDA 32
-#define PIN_IMU_SCL 33
-#define PIN_VIBRATION_MOTOR 13
-#define PIN_BUTTON_CALIBRATE 23
-#define PIN_BUTTON_RESET 22
-#define PIN_BUTTON_ACCEPT 21
+#define PIN_IMU_SDA 14
+#define PIN_IMU_SCL 12
+#define PIN_VIBRATION_MOTOR 25
+#define PIN_BUTTON_1 32
+#define PIN_BUTTON_2 33
+#define PIN_BUTTON_3 34
+#define PIN_BUTTON_4 35
 
 Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28, &Wire);
 BluetoothSerial SerialBT;
@@ -21,9 +22,10 @@ bool hasSentCalibrateMessage = false;
 unsigned long startTime = 0;
 bool hasWaited = false;
 
-bool lastCalibrateState = HIGH;
-bool lastResetState = HIGH;
-bool lastAcceptState = HIGH;
+bool lastButton1State = HIGH;
+bool lastButton2State = HIGH;
+bool lastButton3State = HIGH;
+bool lastButton4State = HIGH;
 
 void setup() {
   Serial.begin(115200);
@@ -43,9 +45,10 @@ void setup() {
   ledcAttachPin(PIN_VIBRATION_MOTOR, 0);
   ledcWrite(0, 0);
 
-  pinMode(PIN_BUTTON_CALIBRATE, INPUT_PULLUP);
-  pinMode(PIN_BUTTON_RESET, INPUT_PULLUP);
-  pinMode(PIN_BUTTON_ACCEPT, INPUT_PULLUP);
+  pinMode(PIN_BUTTON_1, INPUT_PULLUP);
+  pinMode(PIN_BUTTON_2, INPUT_PULLUP);
+  pinMode(PIN_BUTTON_3, INPUT_PULLUP);
+  pinMode(PIN_BUTTON_4, INPUT_PULLUP);
 }
 
 void loop() {
@@ -60,32 +63,40 @@ void loop() {
   }
 
   // Read current states
-  bool currCalibrate = digitalRead(PIN_BUTTON_CALIBRATE);
-  bool currReset = digitalRead(PIN_BUTTON_RESET);
-  bool currAccept = digitalRead(PIN_BUTTON_ACCEPT);
+  bool currButton1 = digitalRead(PIN_BUTTON_1);
+  bool currButton2 = digitalRead(PIN_BUTTON_2);
+  bool currButton3 = digitalRead(PIN_BUTTON_3);
+  bool currButton4 = digitalRead(PIN_BUTTON_4);
 
   // Calibrate button
-  if (lastCalibrateState == HIGH && currCalibrate == LOW) {
+  if (lastButton1State == HIGH && currButton1 == LOW) {
     Serial.println("Calibrate button pressed");
     SerialBT.println("calibrate");
   }
 
   // Reset button
-  if (lastResetState == HIGH && currReset == LOW) {
+  if (lastButton2State == HIGH && currButton2 == LOW) {
     Serial.println("Reset button pressed");
     SerialBT.println("reset");
   }
 
   // Accept button
-  if (lastAcceptState == HIGH && currAccept == LOW) {
+  if (lastButton3State == HIGH && currButton3 == LOW) {
     Serial.println("Accept button pressed");
     SerialBT.println("accept");
   }
 
+  // Accept button
+  if (lastButton4State == HIGH && currButton3 == LOW) {
+    Serial.println("Accept button pressed");
+    SerialBT.println("button4");
+  }
+
   // Update states
-  lastCalibrateState = currCalibrate;
-  lastResetState = currReset;
-  lastAcceptState = currAccept;
+  lastButton1State = currButton1;
+  lastButton2State = currButton2;
+  lastButton3State = currButton3;
+  lastButton4State = currButton4;
 
   uint8_t sys, gyro, accel, mag;
   bno.getCalibration(&sys, &gyro, &accel, &mag);
@@ -113,6 +124,7 @@ void loop() {
       float z = event.orientation.z;
 
       String imuData = String(x) + "," + String(y) + "," + String(z);
+      Serial.println("IMU Data: " + imuData);
       SerialBT.println(imuData);
 
       lastIMUTime = now;
