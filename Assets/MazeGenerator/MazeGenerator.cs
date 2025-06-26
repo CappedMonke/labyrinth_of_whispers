@@ -6,6 +6,7 @@ public class MazeGenerator : MonoBehaviour
 {
     [SerializeField] private Vector2Int mazeSize = new(10, 10);
     [SerializeField] private float scale = 1f;
+    [SerializeField, Range(0, 100)] private float missingWallPercentage = 5f;
     private GameObject currentMaze = null;
 
     private readonly Vector2Int[] directions = new Vector2Int[]
@@ -21,6 +22,9 @@ public class MazeGenerator : MonoBehaviour
         public bool visited = false;
         public bool[] walls = new bool[4] { true, true, true, true };
     }
+
+    private readonly List<GameObject> wallObjects = new List<GameObject>();
+    private readonly List<GameObject> floorObjects = new List<GameObject>();
 
     public void GenerateMaze()
     {
@@ -44,7 +48,7 @@ public class MazeGenerator : MonoBehaviour
         while (stack.Count > 0)
         {
             current = stack.Peek();
-            List<int> unvisitedNeighbors = new List<int>();
+            List<int> unvisitedNeighbors = new();
             for (int i = 0; i < 4; i++)
             {
                 Vector2Int next = current + directions[i];
@@ -71,6 +75,48 @@ public class MazeGenerator : MonoBehaviour
             }
         }
 
+        wallObjects.Clear();
+        floorObjects.Clear();
+
+        List<(int x, int y, int dir)> allWallIndices = new();
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    int nx = x + directions[i].x;
+                    int ny = y + directions[i].y;
+                    if (nx < 0 || nx >= width || ny < 0 || ny >= height)
+                        continue;
+                    if (x < nx || (x == nx && y < ny))
+                    {
+                        if (maze[x, y].walls[i])
+                            allWallIndices.Add((x, y, i));
+                    }
+                }
+            }
+        }
+
+        int wallsToRemove = Mathf.FloorToInt(allWallIndices.Count * (missingWallPercentage / 100f));
+        if (wallsToRemove > 0 && allWallIndices.Count > 0)
+        {
+            List<int> indices = new(allWallIndices.Count);
+            for (int i = 0; i < allWallIndices.Count; i++) indices.Add(i);
+            for (int i = 0; i < wallsToRemove && indices.Count > 0; i++)
+            {
+                int idx = Random.Range(0, indices.Count);
+                var (x, y, dir) = allWallIndices[indices[idx]];
+                maze[x, y].walls[dir] = false;
+                Vector2Int neighbor = new Vector2Int(x, y) + directions[dir];
+                if (neighbor.x >= 0 && neighbor.x < width && neighbor.y >= 0 && neighbor.y < height)
+                {
+                    maze[neighbor.x, neighbor.y].walls[(dir + 2) % 4] = false;
+                }
+                indices.RemoveAt(idx);
+            }
+        }
+
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -79,6 +125,7 @@ public class MazeGenerator : MonoBehaviour
                 floor.transform.SetParent(currentMaze.transform);
                 floor.transform.localScale = new Vector3(scale, 0.1f * scale, scale);
                 floor.transform.localPosition = new Vector3(x * scale, -0.45f * scale, y * scale);
+                floorObjects.Add(floor);
 
                 for (int i = 0; i < 4; i++)
                 {
@@ -103,9 +150,54 @@ public class MazeGenerator : MonoBehaviour
                         wall.transform.SetParent(currentMaze.transform);
                         wall.transform.localScale = wallScale;
                         wall.transform.localPosition = wallPos;
+                        wallObjects.Add(wall);
                     }
                 }
             }
+        }
+    }
+
+    private void CombineAndReplace(List<GameObject> objects, string name, bool addCollider)
+    {
+        if (objects.Count == 0) return;
+
+        GameObject combined = new(name);
+        combined.transform.SetParent(currentMaze.transform);
+        combined.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+        List<MeshFilter> meshFilters = new();
+        foreach (var obj in objects)
+        {
+            if (obj.TryGetComponent<MeshFilter>(out var mf))
+                meshFilters.Add(mf);
+        }
+
+        CombineInstance[] combine = new CombineInstance[meshFilters.Count];
+        for (int i = 0; i < meshFilters.Count; i++)
+        {
+            combine[i].mesh = meshFilters[i].sharedMesh;
+            combine[i].transform = meshFilters[i].transform.localToWorldMatrix;
+        }
+
+        Mesh combinedMesh = new()
+        {
+            indexFormat = UnityEngine.Rendering.IndexFormat.UInt32
+        };
+        combinedMesh.CombineMeshes(combine);
+
+        MeshFilter combinedMF = combined.AddComponent<MeshFilter>();
+        combinedMF.sharedMesh = combinedMesh;
+        MeshRenderer combinedMR = combined.AddComponent<MeshRenderer>();
+        combinedMR.sharedMaterial = objects[0].GetComponent<MeshRenderer>().sharedMaterial;
+
+        if (addCollider)
+        {
+            MeshCollider collider = combined.AddComponent<MeshCollider>();
+            collider.sharedMesh = combinedMesh;
+        }
+
+        foreach (var obj in objects)
+        {
+            DestroyImmediate(obj);
         }
     }
 
@@ -122,7 +214,12 @@ public class MazeGenerator : MonoBehaviour
     {
         if (currentMaze != null)
         {
+            CombineAndReplace(wallObjects, "CombinedWalls", true);
+            CombineAndReplace(floorObjects, "CombinedFloor", false);
+
             currentMaze.name = "Maze_" + System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            wallObjects.Clear();
+            floorObjects.Clear();
             currentMaze = null;
         }
     }
