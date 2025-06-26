@@ -1,9 +1,15 @@
+using System;
+using System.Collections;
 using UnityEngine;
 
 public class BlindCaneAndroid : MonoBehaviour
 {
     [SerializeField] string CANE_DEVICE_NAME = "BlindCane";
-    [SerializeField][Range(10, 255)] int vibrationStrenght = 40;
+    [SerializeField][Range(10, 255)] int vibrationStrength = 30;
+    [SerializeField] private uint onConnectionVibrateIntervals = 3;
+    [SerializeField][Range(10, 255)] private uint onConnectionVibrationStrength = 50;
+    [SerializeField] private float onConnectionVibrateTime = 0.2f;
+    [SerializeField] private float onConnectionVibrateBreakTime = 0.05f;
 
     BluetoothManager bluetoothManager;
 
@@ -15,8 +21,11 @@ public class BlindCaneAndroid : MonoBehaviour
         bluetoothManager = FindFirstObjectByType<BluetoothManager>();
         if (bluetoothManager != null)
         {
-            Time.timeScale = 0f; // Pause the game until Bluetooth is connected
             bluetoothManager.OnDataReceived.AddListener(HandleBluetoothData);
+            bluetoothManager.OnDeviceConnected.AddListener(() =>
+            {
+                StartCoroutine(VibrateOnConnection());
+            });
             bluetoothManager.ConnectPairedDeviceWithRetry(CANE_DEVICE_NAME);
         }
         else
@@ -25,31 +34,46 @@ public class BlindCaneAndroid : MonoBehaviour
         }
     }
 
+    private IEnumerator VibrateOnConnection()
+    {
+        yield return new WaitForSeconds(0.1f); // Buffer
+        for (uint i = 0; i < onConnectionVibrateIntervals; i++)
+        {
+            bluetoothManager.WriteData(onConnectionVibrationStrength.ToString());
+            yield return new WaitForSeconds(onConnectionVibrateTime);
+            bluetoothManager.WriteData("0");
+            yield return new WaitForSeconds(onConnectionVibrateBreakTime);
+        }
+    }
+
     private void HandleBluetoothData(string data)
     {
-        if (data == "calibrate")
+        if (data == "button_1_pressed")
         {
             isCalibrated = false;
+            Debug.Log("Calibration reset.");
             return;
         }
 
-        string[] values = data.Split(',');
-        if (values.Length == 3)
+        if (data.StartsWith("imu_"))
         {
-            float x = float.Parse(values[0]);
-            float y = float.Parse(values[1]);
-            float z = float.Parse(values[2]);
-
-            float currentRotation = x;
-            if (!isCalibrated)
+            string[] values = data.Split('_');
+            if (values.Length == 4)
             {
-                initialRotation = currentRotation - transform.parent.rotation.eulerAngles.y;
-                isCalibrated = true;
-                Time.timeScale = 1f; // Resume the game after calibration
-            }
+                float x = float.Parse(values[1]);
+                float y = float.Parse(values[2]);
+                float z = float.Parse(values[3]);
 
-            float adjustedRotation = currentRotation - initialRotation;
-            transform.rotation = Quaternion.Euler(0, adjustedRotation, 0);
+                float currentRotation = x;
+                if (!isCalibrated)
+                {
+                    initialRotation = currentRotation - transform.parent.rotation.eulerAngles.y;
+                    isCalibrated = true;
+                }
+
+                float adjustedRotation = currentRotation - initialRotation;
+                transform.rotation = Quaternion.Euler(0, adjustedRotation, 0);
+            }
         }
     }
 
@@ -57,7 +81,7 @@ public class BlindCaneAndroid : MonoBehaviour
     {
         if (bluetoothManager != null)
         {
-            bluetoothManager.WriteData(vibrationStrenght.ToString());
+            bluetoothManager.WriteData(vibrationStrength.ToString());
         }
     }
 

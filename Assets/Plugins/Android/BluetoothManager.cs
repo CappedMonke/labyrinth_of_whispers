@@ -6,6 +6,7 @@ using System.Collections;
 public class BluetoothManager : MonoBehaviour
 {
     public UnityEvent<string> OnDataReceived = new();
+    public UnityEvent OnDeviceConnected = new();
 
     private bool isConnected = false;
     private string lastConnectedMac;
@@ -127,6 +128,7 @@ public class BluetoothManager : MonoBehaviour
         if (isConnected)
         {
             Toast("Connected");
+            OnDeviceConnected?.Invoke();
         }
 
         if (status == "disconnected")
@@ -140,7 +142,6 @@ public class BluetoothManager : MonoBehaviour
     // DO NOT CHANGE ITS NAME OR IT WILL NOT BE FOUND BY THE JAVA CLASS
     public void ReadData(string data)
     {
-        // Debug.Log("BT Stream: " + data);
         OnDataReceived?.Invoke(data);
     }
 

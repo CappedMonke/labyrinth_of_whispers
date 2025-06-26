@@ -10,7 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8479859509277847875}
   - component: {fileID: 4766972992678585024}
-  - component: {fileID: 8586363593892898884}
+  - component: {fileID: 5094955160167386656}
+  - component: {fileID: 6877079301765405652}
+  - component: {fileID: 7015115994466072728}
   m_Layer: 6
   m_Name: BlindCane
   m_TagString: Untagged
@@ -61,7 +63,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &8586363593892898884
+--- !u!114 &5094955160167386656
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -70,9 +72,40 @@ MonoBehaviour:
   m_GameObject: {fileID: 2228041871052621153}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5843f4074f1910ce08f330fe7b00d45e, type: 3}
+  m_Script: {fileID: 11500000, guid: 93c26ae9afd6481dd838aab484a66f6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6877079301765405652
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2228041871052621153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dedf090280257ffffa3d86d3aee6d0ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CANE_DEVICE_NAME: BlindCane
+  vibrationStrength: 30
+  onConnectionVibrateIntervals: 3
+  onConnectionVibrationStrength: 50
+  onConnectionVibrateTime: 0.2
+  onConnectionVibrateBreakTime: 0.05
+--- !u!114 &7015115994466072728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2228041871052621153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abc836e0f0d8224cd9469a535d2db538, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rotationSpeed: 100
 --- !u!1 &2818121601572666199
 GameObject:
   m_ObjectHideFlags: 0
@@ -90,6 +123,8 @@ GameObject:
   - component: {fileID: 4546616663493872509}
   - component: {fileID: 989566750474349619}
   - component: {fileID: 3290201489708399021}
+  - component: {fileID: 3418590375147677260}
+  - component: {fileID: 2328669989353748057}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -464,6 +499,30 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &3418590375147677260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2818121601572666199}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a3df0090cbb423c39553dc7dca32ed2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2328669989353748057
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2818121601572666199}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0aad066316128d72aaab210a624419e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6505002565664178627
 GameObject:
   m_ObjectHideFlags: 0

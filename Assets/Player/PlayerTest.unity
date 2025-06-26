@@ -297,6 +297,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6877079301765405652, guid: 14cc7e33143bc8be69ce6a79cefe6db1, type: 3}
+      propertyPath: onConnectionVibrateTime
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 6877079301765405652, guid: 14cc7e33143bc8be69ce6a79cefe6db1, type: 3}
+      propertyPath: onConnectionVibrateBreakTime
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6877079301765405652, guid: 14cc7e33143bc8be69ce6a79cefe6db1, type: 3}
+      propertyPath: onConnectionVibrateIntervals
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6877079301765405652, guid: 14cc7e33143bc8be69ce6a79cefe6db1, type: 3}
+      propertyPath: onConnectionVibrationStrength
+      value: 100
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -902,6 +918,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OnDataReceived:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDeviceConnected:
     m_PersistentCalls:
       m_Calls: []
 --- !u!1 &1263432896
