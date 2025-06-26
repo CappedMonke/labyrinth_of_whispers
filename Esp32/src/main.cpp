@@ -12,6 +12,8 @@
 #define PIN_BUTTON_4 33
 
 Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28, &Wire);
+BluetoothSerial SerialBT;
+String bluetoothInput = "";
 
 unsigned long lastIMUTime = 0;
 const unsigned long imuInterval = 50;
@@ -20,13 +22,14 @@ struct Button {
   uint8_t pin;
   int lastState;
   uint8_t vibrationStrength;
+  String name;
 
-  Button(uint8_t p, uint8_t strength)
-      : pin(p), lastState(HIGH), vibrationStrength(strength) {}
+  Button(uint8_t p, uint8_t strength, String name)
+      : pin(p), lastState(HIGH), vibrationStrength(strength), name(name) {}
 
   void setup() { pinMode(pin, INPUT_PULLUP); }
 
-  void monitor(const char *buttonName) {
+  void monitor() {
     int currentState = digitalRead(pin);
     delay(10);
     int stableState = digitalRead(pin);
@@ -34,26 +37,27 @@ struct Button {
     if (currentState == stableState && currentState != lastState) {
       lastState = currentState;
 
+      String message = name;
       if (currentState == LOW) {
-        Serial.print(buttonName);
-        Serial.println(" pressed.");
-        ledcWrite(0, vibrationStrength);
+        message += "_pressed";
       } else {
-        Serial.print(buttonName);
-        Serial.println(" released.");
-        ledcWrite(0, 0);
+        message += "_released";
       }
+      Serial.println(message);
+      SerialBT.println(message);
     }
   }
 };
 
-Button button1(PIN_BUTTON_1, 64);  // Weak vibration
-Button button2(PIN_BUTTON_2, 128); // Medium vibration
-Button button3(PIN_BUTTON_3, 192); // Strong vibration
-Button button4(PIN_BUTTON_4, 255); // Maximum vibration
+Button button1(PIN_BUTTON_1, 64, "button_1");
+Button button2(PIN_BUTTON_2, 128, "button_2");
+Button button3(PIN_BUTTON_3, 192, "button_3");
+Button button4(PIN_BUTTON_4, 255, "button_4");
 
 void setup() {
   Serial.begin(115200);
+  SerialBT.begin("BlindCane");
+
   Wire.begin(PIN_IMU_SDA, PIN_IMU_SCL);
 
   if (!bno.begin()) {
@@ -75,10 +79,10 @@ void setup() {
 }
 
 void loop() {
-  button1.monitor("Button 1");
-  button2.monitor("Button 2");
-  button3.monitor("Button 3");
-  button4.monitor("Button 4");
+  button1.monitor();
+  button2.monitor();
+  button3.monitor();
+  button4.monitor();
 
   unsigned long now = millis();
   if (now - lastIMUTime > imuInterval) {
@@ -89,9 +93,24 @@ void loop() {
     float y = event.orientation.y;
     float z = event.orientation.z;
 
-    String imuData = String(x) + "," + String(y) + "," + String(z);
-    Serial.println("IMU Data: " + imuData);
+    String imuData = "imu_" + String(x) + "_" + String(y) + "_" + String(z);
+    Serial.println(imuData);
+    SerialBT.println(imuData);
 
     lastIMUTime = now;
+
+    while (SerialBT.available()) {
+      char c = SerialBT.read();
+
+      if (c == '\n') {
+        bluetoothInput.trim();
+        int strength = bluetoothInput.toInt();
+        strength = constrain(strength, 0, 255);
+        ledcWrite(0, strength);
+        bluetoothInput = "";
+      } else {
+        bluetoothInput += c;
+      }
+    }
   }
 }
