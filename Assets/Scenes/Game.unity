@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 182148284}
   - component: {fileID: 182148283}
   - component: {fileID: 182148282}
+  - component: {fileID: 182148288}
   m_Layer: 0
   m_Name: SoundTest (1)
   m_TagString: Sound3D
@@ -155,7 +156,7 @@ AudioLowPassFilter:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.013187813
+      value: 0.09049568
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -351,6 +352,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &182148288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182148281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee4906cc763a71a48993de15728bde6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  checkInterval: 0.2
+  wallMask:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1 &262482801
 GameObject:
   m_ObjectHideFlags: 0
@@ -365,6 +382,7 @@ GameObject:
   - component: {fileID: 262482804}
   - component: {fileID: 262482803}
   - component: {fileID: 262482802}
+  - component: {fileID: 262482808}
   m_Layer: 0
   m_Name: SoundTest (3)
   m_TagString: Sound3D
@@ -404,7 +422,7 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 262482801}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300002, guid: 172d555971e68dd4d937a92143eb64c2, type: 2}
   m_audioClip: {fileID: 8300000, guid: 55088ecf202966c4082a15a43de010e0, type: 3}
@@ -583,6 +601,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &262482808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 262482801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee4906cc763a71a48993de15728bde6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  checkInterval: 0.5
+  wallMask:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1 &289007115
 GameObject:
   m_ObjectHideFlags: 0
@@ -685,6 +719,7 @@ GameObject:
   - component: {fileID: 511601732}
   - component: {fileID: 511601739}
   - component: {fileID: 511601738}
+  - component: {fileID: 511601740}
   m_Layer: 0
   m_Name: EnemyTest
   m_TagString: Sound3D
@@ -707,7 +742,7 @@ AudioLowPassFilter:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0.004092769
+      value: 0.09049568
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -955,6 +990,22 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &511601740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 511601731}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee4906cc763a71a48993de15728bde6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  checkInterval: 0.2
+  wallMask:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1 &563957091
 GameObject:
   m_ObjectHideFlags: 0
@@ -1449,8 +1500,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   soundTag: Sound3D
   wallLayer:
-    serializedVersion: 2
     m_Bits: 128
+  clearFreq: 22000
+  muffledFreq: 500
 --- !u!82 &1073759193
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2001,6 +2053,7 @@ GameObject:
   - component: {fileID: 1263656055}
   - component: {fileID: 1263656054}
   - component: {fileID: 1263656053}
+  - component: {fileID: 1263656059}
   m_Layer: 0
   m_Name: SoundTest (4)
   m_TagString: Sound3D
@@ -2219,6 +2272,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1263656059
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1263656052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee4906cc763a71a48993de15728bde6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  checkInterval: 0.5
+  wallMask:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1 &1416305921
 GameObject:
   m_ObjectHideFlags: 0
@@ -2234,6 +2303,7 @@ GameObject:
   - component: {fileID: 1416305923}
   - component: {fileID: 1416305922}
   - component: {fileID: 1416305928}
+  - component: {fileID: 1416305929}
   m_Layer: 0
   m_Name: ComeHereTrigger
   m_TagString: Sound3D
@@ -2476,6 +2546,22 @@ MonoBehaviour:
   audioMixer: {fileID: 24100000, guid: 6e5fdd8ea66353044afe15f99fc36a55, type: 2}
   exposedParam: VoiceVolume
   fadeDuration: 2
+--- !u!114 &1416305929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416305921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee4906cc763a71a48993de15728bde6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  checkInterval: 0.5
+  wallMask:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1001 &1552496321
 PrefabInstance:
   m_ObjectHideFlags: 0
