@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq; // Added for .Where() and .ToList()
 
 public class MazeGenerator : MonoBehaviour
 {
@@ -23,8 +24,8 @@ public class MazeGenerator : MonoBehaviour
         public bool[] walls = new bool[4] { true, true, true, true };
     }
 
-    private readonly List<GameObject> wallObjects = new List<GameObject>();
-    private readonly List<GameObject> floorObjects = new List<GameObject>();
+    private readonly List<GameObject> wallObjects = new();
+    private readonly List<GameObject> floorObjects = new();
 
     public void GenerateMaze()
     {
@@ -129,23 +130,54 @@ public class MazeGenerator : MonoBehaviour
 
                 for (int i = 0; i < 4; i++)
                 {
-                    if (maze[x, y].walls[i])
+                    bool drawThisWall = false;
+                    Vector3 wallPos = Vector3.zero;
+                    Vector3 wallScale = Vector3.one * scale;
+                    wallScale.y = scale;
+
+                    if (i == 0)
                     {
-                        Vector3 wallPos = Vector3.zero;
-                        Vector3 wallScale = Vector3.one * scale;
-                        wallScale.y = scale;
-                        wallScale.x = (i % 2 == 0) ? scale : 0.1f * scale;
-                        wallScale.z = (i % 2 == 1) ? scale : 0.1f * scale;
-
-                        if (i == 0)
+                        if (maze[x, y].walls[0])
+                        {
+                            drawThisWall = true;
+                            wallScale.x = scale;
+                            wallScale.z = 0.1f * scale;
                             wallPos = new Vector3(x * scale, 0, (y + 0.5f) * scale);
-                        else if (i == 1)
+                        }
+                    }
+                    else if (i == 1)
+                    {
+                        if (maze[x, y].walls[1])
+                        {
+                            drawThisWall = true;
+                            wallScale.x = 0.1f * scale;
+                            wallScale.z = scale;
                             wallPos = new Vector3((x + 0.5f) * scale, 0, y * scale);
-                        else if (i == 2)
+                        }
+                    }
+                    else if (i == 2)
+                    {
+                        if (y == 0 && maze[x, y].walls[2])
+                        {
+                            drawThisWall = true;
+                            wallScale.x = scale;
+                            wallScale.z = 0.1f * scale;
                             wallPos = new Vector3(x * scale, 0, (y - 0.5f) * scale);
-                        else if (i == 3)
+                        }
+                    }
+                    else if (i == 3)
+                    {
+                        if (x == 0 && maze[x, y].walls[3])
+                        {
+                            drawThisWall = true;
+                            wallScale.x = 0.1f * scale;
+                            wallScale.z = scale;
                             wallPos = new Vector3((x - 0.5f) * scale, 0, y * scale);
+                        }
+                    }
 
+                    if (drawThisWall)
+                    {
                         GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
                         wall.transform.SetParent(currentMaze.transform);
                         wall.transform.localScale = wallScale;
@@ -159,16 +191,25 @@ public class MazeGenerator : MonoBehaviour
 
     private void CombineAndReplace(List<GameObject> objects, string name, bool addCollider)
     {
-        if (objects.Count == 0) return;
+        List<GameObject> validObjects = objects.Where(obj => obj != null).ToList();
+
+        if (validObjects.Count == 0) return;
 
         GameObject combined = new(name);
         combined.transform.SetParent(currentMaze.transform);
         combined.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
         List<MeshFilter> meshFilters = new();
-        foreach (var obj in objects)
+        foreach (var obj in validObjects)
         {
-            if (obj.TryGetComponent<MeshFilter>(out var mf))
+            if (obj != null && obj.TryGetComponent<MeshFilter>(out var mf))
                 meshFilters.Add(mf);
+        }
+
+        if (meshFilters.Count == 0)
+        {
+            Debug.LogWarning($"No valid MeshFilters found for {name} to combine.");
+            DestroyImmediate(combined); 
+            return;
         }
 
         CombineInstance[] combine = new CombineInstance[meshFilters.Count];
@@ -187,7 +228,17 @@ public class MazeGenerator : MonoBehaviour
         MeshFilter combinedMF = combined.AddComponent<MeshFilter>();
         combinedMF.sharedMesh = combinedMesh;
         MeshRenderer combinedMR = combined.AddComponent<MeshRenderer>();
-        combinedMR.sharedMaterial = objects[0].GetComponent<MeshRenderer>().sharedMaterial;
+
+        if (validObjects[0] != null && validObjects[0].TryGetComponent<MeshRenderer>(out var mrComponent))
+        {
+            combinedMR.sharedMaterial = mrComponent.sharedMaterial;
+        }
+        else
+        {
+            Debug.LogWarning("Could not find MeshRenderer on the first valid object to get material from. Assigning default material.");
+            combinedMR.sharedMaterial = new Material(Shader.Find("Standard"));
+        }
+
 
         if (addCollider)
         {
@@ -195,7 +246,7 @@ public class MazeGenerator : MonoBehaviour
             collider.sharedMesh = combinedMesh;
         }
 
-        foreach (var obj in objects)
+        foreach (var obj in validObjects)
         {
             DestroyImmediate(obj);
         }
@@ -208,6 +259,8 @@ public class MazeGenerator : MonoBehaviour
             DestroyImmediate(currentMaze);
             currentMaze = null;
         }
+        wallObjects.Clear();
+        floorObjects.Clear();
     }
 
     public void SaveCurrentMaze()
