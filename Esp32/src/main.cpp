@@ -21,11 +21,9 @@ const unsigned long imuInterval = 50;
 struct Button {
   uint8_t pin;
   int lastState;
-  uint8_t vibrationStrength;
   String name;
 
-  Button(uint8_t p, uint8_t strength, String name)
-      : pin(p), lastState(HIGH), vibrationStrength(strength), name(name) {}
+  Button(uint8_t p, String name) : pin(p), lastState(HIGH), name(name) {}
 
   void setup() { pinMode(pin, INPUT_PULLUP); }
 
@@ -49,10 +47,10 @@ struct Button {
   }
 };
 
-Button button1(PIN_BUTTON_1, 64, "button_1");
-Button button2(PIN_BUTTON_2, 128, "button_2");
-Button button3(PIN_BUTTON_3, 192, "button_3");
-Button button4(PIN_BUTTON_4, 255, "button_4");
+Button button1(PIN_BUTTON_1, "button_1");
+Button button2(PIN_BUTTON_2, "button_2");
+Button button3(PIN_BUTTON_3, "button_3");
+Button button4(PIN_BUTTON_4, "button_4");
 
 void setup() {
   Serial.begin(115200);
