@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public class EnemyBehavior : MonoBehaviour
@@ -21,7 +20,7 @@ public class EnemyBehavior : MonoBehaviour
             AudioSource[] sources = player.GetComponents<AudioSource>();
             foreach (AudioSource src in sources)
             {
-                if (src.clip != null && src.clip.name == "PursuitLoop") 
+                if (src.clip != null && src.clip.name == "PursuitLoop")
                 {
                     tensionAudioOnPlayer = src;
                     break;
