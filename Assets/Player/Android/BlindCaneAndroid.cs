@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BlindCaneAndroid : MonoBehaviour
 {
@@ -36,7 +37,7 @@ public class BlindCaneAndroid : MonoBehaviour
 
     private IEnumerator VibrateOnConnection()
     {
-        yield return new WaitForSeconds(0.1f); // Buffer
+        yield return new WaitForSeconds(0.1f);
         for (uint i = 0; i < onConnectionVibrateIntervals; i++)
         {
             bluetoothManager.WriteData(onConnectionVibrationStrength.ToString());
@@ -52,6 +53,18 @@ public class BlindCaneAndroid : MonoBehaviour
         {
             isCalibrated = false;
             Debug.Log("Calibration reset.");
+            return;
+        }
+
+        if (data == "button_2_pressed")
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            return;
+        }
+
+        if (data == "button_3_pressed")
+        {
+            UiManager.Instance.ToggleBlackScreen();
             return;
         }
 

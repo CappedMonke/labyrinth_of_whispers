@@ -7,7 +7,9 @@ public class SpawnNode : MonoBehaviour
 
     void OnDrawGizmos()
     {
+#if UNITY_EDITOR
         Handles.Label(transform.position, text);
+#endif
     }
 
     void OnDestroy()
