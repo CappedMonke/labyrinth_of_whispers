@@ -58,7 +58,7 @@ public class SmartAudioOcclusionWithNavPath : MonoBehaviour
             }
         }
 
-        // Caminho não encontrado ou muito longe
+        // Caminho nï¿½o encontrado ou muito longe
         targetVolume = 0f;
         pathFound = false;
     }
@@ -72,5 +72,11 @@ public class SmartAudioOcclusionWithNavPath : MonoBehaviour
         {
             Gizmos.DrawLine(path.corners[i - 1], path.corners[i]);
         }
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, maxAudibleDistance);
     }
 }
