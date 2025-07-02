@@ -92,6 +92,11 @@ public class BlindCaneAndroid : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        if (!other.CompareTag("Wall"))
+        {
+            return;
+        }
+
         if (bluetoothManager != null)
         {
             bluetoothManager.WriteData(vibrationStrength.ToString());
@@ -100,6 +105,11 @@ public class BlindCaneAndroid : MonoBehaviour
 
     void OnTriggerExit(Collider other)
     {
+        if (!other.CompareTag("Wall"))
+        {
+            return;
+        }
+
         if (bluetoothManager != null)
         {
             bluetoothManager.WriteData("0");

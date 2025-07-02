@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Sound3D
+  - Wall
   layers:
   - Default
   - TransparentFX

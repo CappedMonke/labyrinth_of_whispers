@@ -30,11 +30,21 @@ public class BlindCanePC : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
+        if (!other.CompareTag("Wall"))
+        {
+            return;
+        }
+
         Debug.Log("Entered Vibration Zone");
     }
 
     void OnTriggerExit(Collider other)
     {
+        if (!other.CompareTag("Wall"))
+        {
+            return;
+        }
+
         Debug.Log("Exited Vibration Zone");
     }
 }
